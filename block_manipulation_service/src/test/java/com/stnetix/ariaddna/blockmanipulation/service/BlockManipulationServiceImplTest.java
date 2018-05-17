@@ -14,11 +14,18 @@
 package com.stnetix.ariaddna.blockmanipulation.service;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
+import com.stnetix.ariaddna.commonutils.datetime.DateTime;
+import com.stnetix.ariaddna.commonutils.dto.vufs.MetatableType;
+import com.stnetix.ariaddna.vufs.bo.Block;
+import com.stnetix.ariaddna.vufs.bo.Metatable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -79,6 +86,51 @@ public class BlockManipulationServiceImplTest {
 
         //here it throws exception
         blockManipulationService.getNextBlockUuid(metafile);
+    }
+
+    @Test
+    public void CheckBlock() {
+        int blockSize = 1024;
+        String version = "1";
+        byte[] data = new byte[blockSize];
+        DateTime date = new DateTime();
+
+        Map<String, String> properties = new HashMap<>();
+        properties.put("typeOnFs", FileType.FILE_BIN.toString());
+        metafile.setProperties(properties);
+
+        Random random = new Random();
+        random.nextBytes(data);
+        Block block1 = new Block(version, 0L, metafile.getFileUuid(), data,
+                date.getTimeInMillisec(),
+                (long) blockSize);
+        random.nextBytes(data);
+        Block block2 = new Block(version, 1L, metafile.getFileUuid(), data,
+                date.getTimeInMillisec(),
+                (long) blockSize);
+        random.nextBytes(data);
+        Block block3 = new Block(version, 1L, metafile.getFileUuid(), data,
+                date.getTimeInMillisec(),
+                (long) blockSize);
+        random.nextBytes(data);
+        Block block4 = new Block(version, 1L, metafile.getFileUuid(), data,
+                date.getTimeInMillisec(),
+                (long) blockSize);
+        metafile.addBlockUuid(block1.getBlockUuid());
+        metafile.addBlockUuid(block2.getBlockUuid());
+        metafile.addBlockUuid(block3.getBlockUuid());
+
+        Metatable metatable = new Metatable(MetatableType.MASTER, UUID.randomUUID().toString(),
+                UUID.randomUUID().toString());
+        metatable.addMetafile(metafile);
+        assertTrue(blockManipulationService.checkBlock(block3, metatable));
+        assertFalse(blockManipulationService.checkBlock(block4, metatable));
+        assertTrue(blockManipulationService.checkBlock(block3, metatable));
+
+        //remove block
+        metafile.removeBlockUuid(block3.getBlockUuid());
+        blockManipulationService.removeBlockFromCache(block3, metatable);
+        assertFalse(blockManipulationService.checkBlock(block3, metatable));
     }
 
     @Test(expected = MetafileIsFolderException.class)

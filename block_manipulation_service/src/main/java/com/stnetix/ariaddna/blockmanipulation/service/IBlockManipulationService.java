@@ -15,7 +15,9 @@ package com.stnetix.ariaddna.blockmanipulation.service;
 
 import com.stnetix.ariaddna.blockmanipulation.exception.BlockDoesNotExistException;
 import com.stnetix.ariaddna.blockmanipulation.exception.MetafileIsFolderException;
+import com.stnetix.ariaddna.vufs.bo.Block;
 import com.stnetix.ariaddna.vufs.bo.Metafile;
+import com.stnetix.ariaddna.vufs.bo.Metatable;
 
 public interface IBlockManipulationService {
 
@@ -35,11 +37,26 @@ public interface IBlockManipulationService {
      * Method return Block uuid by number from Metafile. If metafile is folder, method
      * throws {@link MetafileIsFolderException}.
      * if Metafile doesn`t exist block with external number, throws {@link BlockDoesNotExistException}.
-     * @param metafile Metafil object.
+     * @param metafile Metafile object.
      * @param blockNumber number of requested block.
      * @return uuid of block with requsted number.
      * @throws {@link BlockDoesNotExistException}, {@link MetafileIsFolderException}
      * */
     String getBlockUuidByNumber(Metafile metafile, int blockNumber)
             throws MetafileIsFolderException, BlockDoesNotExistException;
+
+    /**
+     * Method checks the presence of a block in  Metatable
+     * @param block Block object
+     * @param metatable Metatable object
+     * @return return true if Metatable contains block and otherwise return false
+     */
+    boolean checkBlock(Block block,Metatable metatable);
+
+    /**
+     * Methot remove block from cache
+     * @param block Block object
+     * @param metatable Metatable object
+     */
+    void removeBlockFromCache(Block block,Metatable metatable);
 }

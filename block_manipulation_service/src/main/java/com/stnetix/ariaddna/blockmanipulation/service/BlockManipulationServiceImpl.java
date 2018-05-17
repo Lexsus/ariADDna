@@ -14,7 +14,10 @@
 package com.stnetix.ariaddna.blockmanipulation.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -22,13 +25,71 @@ import org.springframework.stereotype.Service;
 import com.stnetix.ariaddna.blockmanipulation.exception.BlockDoesNotExistException;
 import com.stnetix.ariaddna.blockmanipulation.exception.MetafileIsFolderException;
 import com.stnetix.ariaddna.commonutils.dto.vufs.FileType;
+import com.stnetix.ariaddna.vufs.bo.Block;
 import com.stnetix.ariaddna.vufs.bo.Metafile;
+import com.stnetix.ariaddna.vufs.bo.Metatable;
+
+
 
 @Service
 @Scope(value = "session")
 public class BlockManipulationServiceImpl implements IBlockManipulationService {
 
     private List<String> blockUuidList;
+    private HashMap<String, HashSet<String>> blockMap = new HashMap<>();
+
+    private Metafile GetMetafileByFileUuid(Metatable metatable, String fileUuid) {
+        Set<Metafile> metafileSet = metatable.getMetafileSet();
+        for (Metafile metafile : metafileSet) {
+            if (metafile.getFileUuid().equals(fileUuid)) {
+                return metafile;
+            }
+        }
+        return null;
+    }
+
+    private boolean containsBlock(Metafile metafile, Block block) {
+        for (String blockUuid : metafile.getBlockUuidList()) {
+            if (blockUuid.equals(block.getBlockUuid())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean checkBlock(Block block, Metatable metatable) {
+
+        HashSet<String> blockOfFile = null;
+        if (blockMap.containsKey(block.getFileUuid())) {
+            blockOfFile = blockMap.get(block.getFileUuid());
+            if (blockOfFile.contains(block.getBlockUuid())) {
+                return true;
+            }
+            Metafile metafile = GetMetafileByFileUuid(metatable, block.getFileUuid());
+            if (containsBlock(metafile, block)) {
+                blockOfFile.add(block.getBlockUuid());
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            Metafile metafile = GetMetafileByFileUuid(metatable, block.getFileUuid());
+            if (metafile != null) {
+                blockOfFile = new HashSet<>();
+                blockMap.put(block.getFileUuid(), blockOfFile);
+                if (containsBlock(metafile, block)) {
+                    blockOfFile.add(block.getBlockUuid());
+                    return true;
+                } else {
+                    return false;
+                }
+
+            } else {
+                return false;
+            }
+        }
+    }
 
     @Override
     public String getNextBlockUuid(Metafile metafile)
@@ -76,6 +137,17 @@ public class BlockManipulationServiceImpl implements IBlockManipulationService {
         }
 
         return blockUuidList.get(blockNumber);
+    }
+
+    @Override public void removeBlockFromCache(Block block, Metatable metatable) {
+        HashSet<String> blocksOfFile = null;
+        if (blockMap.containsKey(block.getFileUuid())) {
+            blocksOfFile = blockMap.get(block.getFileUuid());
+            blocksOfFile.remove(block.getBlockUuid());
+            if (blocksOfFile.size() == 0) {
+                blockMap.remove(block.getFileUuid());
+            }
+        }
     }
 
     private StringBuilder getMetafileInfoForLog(Metafile metafile, String methodName) {
