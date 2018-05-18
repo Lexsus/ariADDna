@@ -123,14 +123,14 @@ public class BlockManipulationServiceImplTest {
         Metatable metatable = new Metatable(MetatableType.MASTER, UUID.randomUUID().toString(),
                 UUID.randomUUID().toString());
         metatable.addMetafile(metafile);
-        assertTrue(blockManipulationService.checkBlock(block3, metatable));
-        assertFalse(blockManipulationService.checkBlock(block4, metatable));
-        assertTrue(blockManipulationService.checkBlock(block3, metatable));
+        assertTrue(blockManipulationService.isExistOnVufs(block3, metatable));
+        assertFalse(blockManipulationService.isExistOnVufs(block4, metatable));
+        assertTrue(blockManipulationService.isExistOnVufs(block3, metatable));
 
         //remove block
         metafile.removeBlockUuid(block3.getBlockUuid());
         blockManipulationService.removeBlockFromCache(block3, metatable);
-        assertFalse(blockManipulationService.checkBlock(block3, metatable));
+        assertFalse(blockManipulationService.isExistOnVufs(block3, metatable));
     }
 
     @Test(expected = MetafileIsFolderException.class)

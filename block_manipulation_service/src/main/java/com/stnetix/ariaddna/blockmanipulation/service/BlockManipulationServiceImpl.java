@@ -58,7 +58,7 @@ public class BlockManipulationServiceImpl implements IBlockManipulationService {
     }
 
     @Override
-    public boolean checkBlock(Block block, Metatable metatable) {
+    public boolean isExistOnVufs(Block block, Metatable metatable) {
 
         HashSet<String> blockOfFile = null;
         if (blockMap.containsKey(block.getFileUuid())) {

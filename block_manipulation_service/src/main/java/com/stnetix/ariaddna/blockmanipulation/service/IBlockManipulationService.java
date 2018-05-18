@@ -51,7 +51,7 @@ public interface IBlockManipulationService {
      * @param metatable Metatable object
      * @return return true if Metatable contains block and otherwise return false
      */
-    boolean checkBlock(Block block,Metatable metatable);
+    boolean isExistOnVufs(Block block,Metatable metatable);
 
     /**
      * Methot remove block from cache
