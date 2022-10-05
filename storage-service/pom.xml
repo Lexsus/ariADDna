@@ -12,7 +12,7 @@
     <artifactId>storage-service</artifactId>
 
     <properties>
-        <spring-boot.version>1.5.4.RELEASE</spring-boot.version>
+        <spring-boot.version>2.6.9</spring-boot.version>
     </properties>
 
     <dependencies>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>9.4.1212.jre7</version>
+            <version>42.2.26.jre6</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
