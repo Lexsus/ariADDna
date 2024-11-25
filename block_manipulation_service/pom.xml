@@ -11,7 +11,7 @@
     <artifactId>block_manipulation_service</artifactId>
 
     <properties>
-        <spring-boot.version>1.5.4.RELEASE</spring-boot.version>
+        <spring-boot.version>3.2.11</spring-boot.version>
     </properties>
 
     <dependencies>
