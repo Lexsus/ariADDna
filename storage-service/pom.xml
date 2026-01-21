@@ -12,7 +12,7 @@
     <artifactId>storage-service</artifactId>
 
     <properties>
-        <spring-boot.version>1.5.4.RELEASE</spring-boot.version>
+        <spring-boot.version>2.2.0.RELEASE</spring-boot.version>
     </properties>
 
     <dependencies>
